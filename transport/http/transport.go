@@ -1,4 +1,4 @@
-package main
+package http
 
 import (
 	"context"
@@ -9,29 +9,32 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	httptransport "github.com/go-kit/kit/transport/http"
+	"github.com/yuhueijin/MyFirstGoAPI/service"
+	"github.com/yuhueijin/MyFirstGoAPI/endpoint"
+
 )
 
-func makeHandler(s Service) http.Handler {
+func MakeHandler(s service.Service) http.Handler {
 	options := []httptransport.ServerOption{
 		httptransport.ServerErrorEncoder(encodeError),
 	}
 
 	addHandler := httptransport.NewServer(
-		makeAddEndpoint(s),
+		endpoint.MakeAddEndpoint(s),
 		decodeAddRequest,
 		encodeAddResponse,
 		options...,
 	)
 
 	removeHandler := httptransport.NewServer(
-		makeRemoveEndpoint(s),
+		endpoint.MakeRemoveEndpoint(s),
 		decodeRemoveRequest,
 		encodeRemoveResponse,
 		options...,
 	)
 
 	getAllHandler := httptransport.NewServer(
-		makeGetAllEndpoint(s),
+		endpoint.MakeGetAllEndpoint(s),
 		decodeGetAllRequest,
 		encodeGetAllResponse,
 		options...,
@@ -48,7 +51,7 @@ func makeHandler(s Service) http.Handler {
 }
 
 func decodeAddRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var request addRequest
+	var request endpoint.AddRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, ErrBadRequest
 	}
@@ -60,7 +63,7 @@ func decodeRemoveRequest(_ context.Context, r *http.Request) (interface{}, error
 	if err != nil {
 		return nil, ErrInvalidId
 	}
-	return removeRequest{
+	return endpoint.RemoveRequest{
 		ID: id,
 	}, nil
 }
@@ -73,21 +76,21 @@ var ErrBadRequest = errors.New("bad request")
 var ErrInvalidId = errors.New("invalid id")
 
 func encodeAddResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
-	res := response.(*addResponse)
-	return json.NewEncoder(w).Encode(res.err)
+	res := response.(*endpoint.AddResponse)
+	return json.NewEncoder(w).Encode(res.Err)
 }
 
 func encodeRemoveResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
-	res := response.(*removeResponse)
-	return json.NewEncoder(w).Encode(res.err)
+	res := response.(*endpoint.RemoveResponse)
+	return json.NewEncoder(w).Encode(res.Err)
 }
 
 func encodeGetAllResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
-	res := response.(*getAllResponse)
-	if res.err != nil {
-		return json.NewEncoder(w).Encode(res.err)
+	res := response.(*endpoint.GetAllResponse)
+	if res.Err != nil {
+		return json.NewEncoder(w).Encode(res.Err)
 	}
-	return json.NewEncoder(w).Encode(res.payload)
+	return json.NewEncoder(w).Encode(res.Payload)
 }
 
 func encodeError(_ context.Context, err error, w http.ResponseWriter) {
