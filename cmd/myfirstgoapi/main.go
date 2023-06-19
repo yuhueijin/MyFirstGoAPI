@@ -21,13 +21,12 @@ var (
 )
 
 func main() {
-	var prodcutService service.Service
-	prodcutService = service.NewService()
+	prodcutService := service.NewService()
 	handler := myHttp.MakeHandler(prodcutService)
-	r := chi.NewRouter()
-	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(httpTimeout))
-	r.Mount("/api/v1", handler)
+	router := chi.NewRouter()
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.Timeout(httpTimeout))
+	router.Mount("/api/v1", handler)
 
 	errs := make(chan error)
 	go func() {
@@ -38,7 +37,7 @@ func main() {
 
 	go func() {
 		log.Printf("listening on %s", httpAddr)
-		errs <- http.ListenAndServe(httpAddr, r)
+		errs <- http.ListenAndServe(httpAddr, router)
 	}()
 
 	log.Printf("exit", <-errs)

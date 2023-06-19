@@ -14,40 +14,40 @@ import (
 
 )
 
-func MakeHandler(s service.Service) http.Handler {
+func MakeHandler(supportedService service.Service) http.Handler {
 	options := []httptransport.ServerOption{
 		httptransport.ServerErrorEncoder(encodeError),
 	}
 
 	addHandler := httptransport.NewServer(
-		endpoint.MakeAddEndpoint(s),
+		endpoint.MakeAddEndpoint(supportedService),
 		decodeAddRequest,
 		encodeAddResponse,
 		options...,
 	)
 
 	removeHandler := httptransport.NewServer(
-		endpoint.MakeRemoveEndpoint(s),
+		endpoint.MakeRemoveEndpoint(supportedService),
 		decodeRemoveRequest,
 		encodeRemoveResponse,
 		options...,
 	)
 
 	getAllHandler := httptransport.NewServer(
-		endpoint.MakeGetAllEndpoint(s),
+		endpoint.MakeGetAllEndpoint(supportedService),
 		decodeGetAllRequest,
 		encodeGetAllResponse,
 		options...,
 	)
 
-	r := chi.NewRouter()
-	r.Route("/items", func(r chi.Router) {
+	router := chi.NewRouter()
+	router.Route("/items", func(r chi.Router) {
 		r.Get("/", getAllHandler.ServeHTTP)
 		r.Post("/add", addHandler.ServeHTTP)
 		r.Get("/remove/{ID}", removeHandler.ServeHTTP)
 	})
 
-	return r
+	return router
 }
 
 func decodeAddRequest(_ context.Context, r *http.Request) (interface{}, error) {

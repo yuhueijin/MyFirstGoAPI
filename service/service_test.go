@@ -1,15 +1,14 @@
-package test
+package service
 
 import (
    "testing"
 
    "github.com/stretchr/testify/assert"
-	"github.com/yuhueijin/MyFirstGoAPI/service"
 )
 
 func TestAdd(t *testing.T) {
    type args struct {
-      model *service.Model
+      model *Model
    }
 
    testCases := []struct {
@@ -20,7 +19,7 @@ func TestAdd(t *testing.T) {
       {
          name: "should add items",
          args: args{
-            model: &service.Model{
+            model: &Model{
                Name: "test item",
             },
          },
@@ -28,11 +27,11 @@ func TestAdd(t *testing.T) {
       },
    }
 
-   s := service.NewService()
+   targetService := NewService()
 
    for _, tc := range testCases {
       t.Run(tc.name, func(t *testing.T) {
-         err := s.Add(tc.args.model.Name)
+         err := targetService.Add(tc.args.model.Name)
 
          assert.Equal(t, tc.err, err)
       })
@@ -58,7 +57,7 @@ func TestRemove(t *testing.T) {
       },
    }
 
-   s := service.NewService()
+   s := NewService()
 
    for _, tc := range testCases {
       t.Run(tc.name, func(t *testing.T) {
@@ -72,17 +71,17 @@ func TestRemove(t *testing.T) {
 func TestGetAll(t *testing.T) {
    testCases := []struct {
       name     string
-      expected []service.Model
+      expected []Model
       err      error
    }{
       {
          name:     "should get all items",
-         expected: []service.Model{},
+         expected: []Model{},
          err:      nil,
       },
    }
 
-   s := service.NewService()
+   s := NewService()
 
    for _, tc := range testCases {
       t.Run(tc.name, func(t *testing.T) {

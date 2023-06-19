@@ -8,29 +8,29 @@ import (
 )
 
 
-func MakeAddEndpoint(s service.Service) endpoint.Endpoint {
+func MakeAddEndpoint(supportedService service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		input := request.(AddRequest)
-		err := s.Add(input.Name)
+		err := supportedService.Add(input.Name)
 		return &AddResponse{
 			Err: err,
 		}, nil
 	}
 }
 
-func MakeRemoveEndpoint(s service.Service) endpoint.Endpoint {
+func MakeRemoveEndpoint(supportedService service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		input := request.(RemoveRequest)
-		err := s.Remove(input.ID)
+		err := supportedService.Remove(input.ID)
 		return &RemoveResponse{
 			Err: err,
 		}, nil
 	}
 }
 
-func MakeGetAllEndpoint(s service.Service) endpoint.Endpoint {
+func MakeGetAllEndpoint(supportedService service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		res, err := s.GetAll()
+		res, err := supportedService.GetAll()
 		return &GetAllResponse{
 			Payload: res,
 			Err:     err,
