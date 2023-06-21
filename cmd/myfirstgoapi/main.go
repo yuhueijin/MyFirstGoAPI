@@ -21,7 +21,7 @@ var (
 )
 
 func main() {
-	prodcutService := service.NewService()
+	prodcutService := service.NewProductService()
 	handler := myHttp.MakeHandler(prodcutService)
 	router := chi.NewRouter()
 	router.Use(middleware.Recoverer)
