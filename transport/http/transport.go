@@ -43,8 +43,8 @@ func MakeHandler(supportedService service.Service) http.Handler {
 	router := chi.NewRouter()
 	router.Route("/items", func(r chi.Router) {
 		r.Get("/", getAllHandler.ServeHTTP)
-		r.Post("/add", addHandler.ServeHTTP)
-		r.Get("/remove/{ID}", removeHandler.ServeHTTP)
+		r.Post("/", addHandler.ServeHTTP)
+		r.Delete("/{ID}", removeHandler.ServeHTTP)
 	})
 
 	return router
